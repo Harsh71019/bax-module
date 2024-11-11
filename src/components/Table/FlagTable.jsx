@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 import './FlagTable.css';
+import useAuthStore from 'host/authStore';
 
 const FlagTable = ({ data }) => {
   const [selectedValues, setSelectedValues] = useState({});
+  const authState = useAuthStore((state) => state.authState);
 
+  console.log(authState, 'hahahhahahhah');
   const handleCheckboxChange = (id, checked) => {
     setSelectedValues((prev) => ({
       ...prev,
