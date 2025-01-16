@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-// FlagTable.jsx
 import { useState } from 'react';
 import './FlagTable.css';
 
