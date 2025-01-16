@@ -1,13 +1,11 @@
 /* eslint-disable react/prop-types */
+// FlagTable.jsx
 import { useState } from 'react';
 import './FlagTable.css';
-import useAuthStore from 'host/authStore';
 
-const FlagTable = ({ data }) => {
+const FlagTable = ({ data, columns, triggerTypes }) => {
   const [selectedValues, setSelectedValues] = useState({});
-  const authState = useAuthStore((state) => state.authState);
 
-  console.log(authState, 'hahahhahahhah');
   const handleCheckboxChange = (id, checked) => {
     setSelectedValues((prev) => ({
       ...prev,
@@ -22,12 +20,16 @@ const FlagTable = ({ data }) => {
     }));
   };
 
+  const gridTemplateColumns = columns.map(col => col.width || '1fr').join(' ');
+
   return (
     <div className='flag-table'>
-      <div className='table-header'>
-        <div className='header-flag'>Flag Rule</div>
-        <div className='header-instructions'>Instructions</div>
-        <div className='header-trigger'>Trigger</div>
+      <div className='table-header' style={{ gridTemplateColumns }}>
+        {columns.map((column, index) => (
+          <div key={index} className={`header-${column.key}`}>
+            {column.title}
+          </div>
+        ))}
       </div>
 
       {data.sections.map((section, sectionIndex) => (
@@ -35,13 +37,20 @@ const FlagTable = ({ data }) => {
           <div className='section-header'>
             <div className='section-title'>{section.title}</div>
             <div className='flag-icons'>
-              <span className='warning-flag'>⚠️</span>
-              <span className='critical-flag'>🚫</span>
+              {triggerTypes.map((trigger, idx) => (
+                <span key={idx} className={`${trigger.key}-flag`}>
+                  {trigger.icon}
+                </span>
+              ))}
             </div>
           </div>
 
           {section.rows.map((row, rowIndex) => (
-            <div key={rowIndex} className='table-row'>
+            <div
+              key={rowIndex}
+              className='table-row'
+              style={{ gridTemplateColumns }}
+            >
               <div className='flag-rule'>
                 <label className='checkbox-container'>
                   <input
@@ -58,51 +67,33 @@ const FlagTable = ({ data }) => {
               <div className='instructions'>{row.instruction}</div>
 
               <div className='triggers'>
-                <div className='trigger-group'>
-                  <select
-                    value={selectedValues[row.checkbox.id]?.warning || ''}
-                    onChange={(e) =>
-                      handleTriggerChange(
-                        row.checkbox.id,
-                        'warning',
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value=''>Select</option>
-                    {row.triggers.warning.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  {row.triggers.warning.unit && (
-                    <span className='unit'>{row.triggers.warning.unit}</span>
-                  )}
-                </div>
-
-                <div className='trigger-group'>
-                  <select
-                    value={selectedValues[row.checkbox.id]?.critical || ''}
-                    onChange={(e) =>
-                      handleTriggerChange(
-                        row.checkbox.id,
-                        'critical',
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value=''>Select</option>
-                    {row.triggers.critical.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  {row.triggers.critical.unit && (
-                    <span className='unit'>{row.triggers.critical.unit}</span>
-                  )}
-                </div>
+                {triggerTypes.map((triggerType, idx) => (
+                  row.triggers[triggerType.key] && 
+                  <div key={idx} className='trigger-group'>
+                    <select
+                      value={selectedValues[row.checkbox.id]?.[triggerType.key] || ''}
+                      onChange={(e) =>
+                        handleTriggerChange(
+                          row.checkbox.id,
+                          triggerType.key,
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value=''>Select</option>
+                      {row.triggers[triggerType.key]?.options?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    {row.triggers[triggerType.key]?.unit && (
+                      <span className='unit'>
+                        {row.triggers[triggerType.key].unit}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           ))}
@@ -113,3 +104,4 @@ const FlagTable = ({ data }) => {
 };
 
 export default FlagTable;
+
