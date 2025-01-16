@@ -1,10 +1,9 @@
 import FlagTable from './components/Table/FlagTable';
 
-// Define columns configuration
 const columns = [
   { key: 'flag', title: 'Flag Rule', width: '200px' },
-  { key: 'instructions', title: 'Instructions', width: '1fr' },
-  { key: 'trigger', title: 'Trigger', width: '300px' }
+  { key: 'instructions', title: 'Instructions', width: '400px' }, // Fixed width
+  { key: 'trigger', title: 'Trigger', width: '350px' }
 ];
 
 // Define trigger types
@@ -126,11 +125,13 @@ const tableData = {
 function App() {
   return (
     <>
-      <FlagTable 
-        data={tableData} 
-        columns={columns} 
-        triggerTypes={triggerTypes} 
-      />
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+        <FlagTable
+          data={tableData}
+          columns={columns}
+          triggerTypes={triggerTypes}
+        />
+      </div>
     </>
   );
 }
